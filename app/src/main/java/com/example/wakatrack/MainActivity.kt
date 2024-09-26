@@ -204,8 +204,9 @@ class MainActivity : AppCompatActivity() {
     private fun formatTime(totalSeconds: Int): String {
         val hours = totalSeconds / 3600
         val minutes = (totalSeconds % 3600) / 60
-        return "$hours hours $minutes minutes"
+        return "${hours}h ${minutes}m"
     }
+
 
     private fun updateWidget() {
         val appWidgetManager = AppWidgetManager.getInstance(this)

@@ -27,34 +27,43 @@ class WakaTrackWidget : AppWidgetProvider() {
         private const val PROJECT_LIST_KEY = "project_list_today"
 
         fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-            // Load data from SharedPreferences
             val sharedPreferences: SharedPreferences = context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
             val totalTimeSpent = sharedPreferences.getString(TOTAL_TIME_KEY, "0 hours") ?: "0 hours"
             val projectList = sharedPreferences.getString(PROJECT_LIST_KEY, "") ?: ""
 
-            // Split and filter project list (ignore empty lines)
             val projects = projectList.split("\n").filter { it.isNotBlank() }
 
-            // Set up the widget layout
             val views = RemoteViews(context.packageName, R.layout.wakatrack_widget)
 
-            // Update total time spent today
             views.setTextViewText(R.id.tv_total_time, "Total Time: $totalTimeSpent")
 
-            // Update individual project times (up to 3 projects)
-            val projectTextViews = listOf(
-                R.id.tv_project_1,
-                R.id.tv_project_2,
-                R.id.tv_project_3
+            val projectNameTextViews = listOf(
+                R.id.tv_project_name_1,
+                R.id.tv_project_name_2,
+                R.id.tv_project_name_3
             )
 
-            // Dynamically display or hide project TextViews
-            for (i in projectTextViews.indices) {
+            val projectTimeTextViews = listOf(
+                R.id.tv_project_time_1,
+                R.id.tv_project_time_2,
+                R.id.tv_project_time_3
+            )
+
+            for (i in projectNameTextViews.indices) {
                 if (i < projects.size) {
-                    views.setTextViewText(projectTextViews[i], projects[i])
-                    views.setViewVisibility(projectTextViews[i], View.VISIBLE)
+                    val projectParts = projects[i].split(":")
+                    val projectName = projectParts[0].trim()
+                    val projectTime = projectParts.getOrElse(1) { "0h 0m" }.trim()
+
+                    views.setTextViewText(projectNameTextViews[i], projectName)
+                    views.setTextViewText(projectTimeTextViews[i], projectTime)
+
+                    views.setViewVisibility(projectNameTextViews[i], View.VISIBLE)
+                    views.setViewVisibility(projectTimeTextViews[i], View.VISIBLE)
                 } else {
-                    views.setViewVisibility(projectTextViews[i], View.GONE)
+                    // Hide the views if there are no more projects
+                    views.setViewVisibility(projectNameTextViews[i], View.GONE)
+                    views.setViewVisibility(projectTimeTextViews[i], View.GONE)
                 }
             }
 
