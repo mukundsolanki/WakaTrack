@@ -3,6 +3,8 @@ package com.example.wakatrack
 import Project
 import ProjectAdapter
 import WakaTimeApi
+import android.appwidget.AppWidgetManager
+import android.content.ComponentName
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
@@ -45,6 +47,7 @@ class MainActivity : AppCompatActivity() {
         val savedApiKey = sharedPreferences.getString("api_key", null)
         if (savedApiKey != null) {
             showHomeScreen(savedApiKey)
+            fetchProjectsForToday(savedApiKey)
         } else {
             showApiKeyInput()
         }
@@ -114,11 +117,18 @@ class MainActivity : AppCompatActivity() {
                         Project(name, projects.sumOf { it.total_seconds })
                     }
 
-                Log.d("WakaTrack", "Fetched ${consolidatedProjects.size} projects from $startDate to $endDate")
+                Log.d(
+                    "WakaTrack",
+                    "Fetched ${consolidatedProjects.size} projects from $startDate to $endDate"
+                )
 
                 if (consolidatedProjects.isEmpty()) {
                     Log.w("WakaTrack", "No projects found in the last 7 days")
-                    Toast.makeText(this@MainActivity, "No projects found in the last 7 days", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "No projects found in the last 7 days",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     projectList.layoutManager = LinearLayoutManager(this@MainActivity)
                     projectList.adapter = ProjectAdapter(consolidatedProjects)
@@ -134,16 +144,78 @@ class MainActivity : AppCompatActivity() {
                             else -> "HTTP Error ${e.code()}: ${e.message()}"
                         }
                     }
+
                     is java.net.UnknownHostException -> "Network error. Please check your internet connection."
                     else -> "Error fetching projects: ${e.message}"
                 }
                 Toast.makeText(this@MainActivity, errorMessage, Toast.LENGTH_LONG).show()
 
-                // If it's an authentication error, prompt the user to re-enter the API key
                 if (e is retrofit2.HttpException && e.code() == 401) {
                     showApiKeyInput()
                 }
             }
         }
     }
+
+    private fun fetchProjectsForToday(apiKey: String) {
+        lifecycleScope.launch {
+            try {
+                Log.d("WakaTrack", "Fetching projects for today...")
+
+                val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+                val today = dateFormat.format(Calendar.getInstance().time)
+
+                // Encode API key to Base64
+                val encodedApiKey = Base64.encodeToString(apiKey.toByteArray(), Base64.NO_WRAP)
+                val authorizationHeader = "Basic $encodedApiKey"
+
+                // Fetch projects for today
+                val response = wakaTimeApi.getProjects(authorizationHeader, today, today)
+                val allProjects = response.data.flatMap { it.projects }
+                val consolidatedProjects = allProjects.groupBy { it.name }
+                    .map { (name, projects) ->
+                        Project(name, projects.sumOf { it.total_seconds })
+                    }
+
+                Log.d("WakaTrack", "Fetched ${consolidatedProjects.size} projects for today")
+
+                // Calculate total time spent today
+                val totalTimeToday = consolidatedProjects.sumOf { it.total_seconds }
+
+                if (consolidatedProjects.isEmpty()) {
+                    Log.w("WakaTrack", "No projects found for today")
+                } else {
+                    // Save data in SharedPreferences for the widget
+                    val editor = sharedPreferences.edit()
+                    editor.putString("total_time_spent_today", formatTime(totalTimeToday.toInt()))
+                    editor.putString("project_list_today", consolidatedProjects.joinToString("\n") {
+                        "${it.name}: ${formatTime(it.total_seconds.toInt())}"
+                    })
+                    editor.apply()
+
+                    updateWidget()
+                }
+            } catch (e: Exception) {
+                Log.e("WakaTrack", "Error fetching projects", e)
+            }
+        }
+    }
+
+    private fun formatTime(totalSeconds: Int): String {
+        val hours = totalSeconds / 3600
+        val minutes = (totalSeconds % 3600) / 60
+        return "$hours hours $minutes minutes"
+    }
+
+    private fun updateWidget() {
+        val appWidgetManager = AppWidgetManager.getInstance(this)
+        val widgetIds = appWidgetManager.getAppWidgetIds(ComponentName(this, WakaTrackWidget::class.java))
+
+        Log.d("WakaTrack", "Updating widget for IDs: ${widgetIds.joinToString(",")}")
+
+        for (widgetId in widgetIds) {
+            WakaTrackWidget.updateAppWidget(this, appWidgetManager, widgetId)
+        }
+    }
+
 }
