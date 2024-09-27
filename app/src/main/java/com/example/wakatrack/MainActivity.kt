@@ -124,11 +124,18 @@ class MainActivity : AppCompatActivity() {
                         Project(name, projects.sumOf { it.total_seconds })
                     }
 
-                Log.d("WakaTrack", "Fetched ${consolidatedProjects.size} projects from $startDate to $endDate")
+                Log.d(
+                    "WakaTrack",
+                    "Fetched ${consolidatedProjects.size} projects from $startDate to $endDate"
+                )
 
                 if (consolidatedProjects.isEmpty()) {
                     Log.w("WakaTrack", "No projects found in the last 7 days")
-                    Toast.makeText(this@MainActivity, "No projects found in the last 7 days", Toast.LENGTH_LONG).show()
+                    Toast.makeText(
+                        this@MainActivity,
+                        "No projects found in the last 7 days",
+                        Toast.LENGTH_LONG
+                    ).show()
                 } else {
                     projectList.layoutManager = LinearLayoutManager(this@MainActivity)
                     projectList.adapter = ProjectAdapter(consolidatedProjects)
@@ -144,6 +151,7 @@ class MainActivity : AppCompatActivity() {
                             else -> "HTTP Error ${e.code()}: ${e.message()}"
                         }
                     }
+
                     is java.net.UnknownHostException -> "Network error. Please check your internet connection."
                     else -> "Error fetching projects: ${e.message}"
                 }
@@ -211,7 +219,8 @@ class MainActivity : AppCompatActivity() {
 
     private fun updateWidget() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
-        val widgetIds = appWidgetManager.getAppWidgetIds(ComponentName(this, WakaTrackWidget::class.java))
+        val widgetIds =
+            appWidgetManager.getAppWidgetIds(ComponentName(this, WakaTrackWidget::class.java))
 
         Log.d("WakaTrack", "Updating widget for IDs: ${widgetIds.joinToString(",")}")
 

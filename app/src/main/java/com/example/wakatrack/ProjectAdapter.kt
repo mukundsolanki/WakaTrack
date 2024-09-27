@@ -6,7 +6,8 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.wakatrack.R
 
-class ProjectAdapter(private val projects: List<Project>) : RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
+class ProjectAdapter(private val projects: List<Project>) :
+    RecyclerView.Adapter<ProjectAdapter.ViewHolder>() {
 
     init {
         Log.d("WakaTrack", "ProjectAdapter initialized with ${projects.size} projects")
@@ -27,7 +28,10 @@ class ProjectAdapter(private val projects: List<Project>) : RecyclerView.Adapter
         val project = projects[position]
         holder.projectName.text = project.name
         holder.timeSpent.text = formatTime(project.total_seconds)
-        Log.d("WakaTrack", "Bound project: ${project.name} with time: ${formatTime(project.total_seconds)}")
+        Log.d(
+            "WakaTrack",
+            "Bound project: ${project.name} with time: ${formatTime(project.total_seconds)}"
+        )
     }
 
     override fun getItemCount() = projects.size

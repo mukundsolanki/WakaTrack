@@ -15,8 +15,13 @@ class WakaTrackWidget : AppWidgetProvider() {
         private const val TOTAL_TIME_KEY = "total_time_spent_today"
         private const val PROJECT_LIST_KEY = "project_list_today"
 
-        fun updateAppWidget(context: Context, appWidgetManager: AppWidgetManager, appWidgetId: Int) {
-            val sharedPreferences: SharedPreferences = context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
+        fun updateAppWidget(
+            context: Context,
+            appWidgetManager: AppWidgetManager,
+            appWidgetId: Int
+        ) {
+            val sharedPreferences: SharedPreferences =
+                context.getSharedPreferences(SHARED_PREFS_KEY, Context.MODE_PRIVATE)
             val totalTimeSpent = sharedPreferences.getString(TOTAL_TIME_KEY, "0 hours") ?: "0 hours"
             val projectList = sharedPreferences.getString(PROJECT_LIST_KEY, "") ?: ""
 
