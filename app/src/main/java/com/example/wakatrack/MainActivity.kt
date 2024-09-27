@@ -218,5 +218,4 @@ class MainActivity : AppCompatActivity() {
             WakaTrackWidget.updateAppWidget(this, appWidgetManager, widgetId)
         }
     }
-
 }

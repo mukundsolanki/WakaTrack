@@ -6,20 +6,9 @@ import android.content.Context
 import android.content.SharedPreferences
 import android.view.View
 import android.widget.RemoteViews
+import android.util.Log
 
 class WakaTrackWidget : AppWidgetProvider() {
-
-    override fun onUpdate(context: Context, appWidgetManager: AppWidgetManager, appWidgetIds: IntArray) {
-        // Loop through each widget ID and update accordingly
-        for (appWidgetId in appWidgetIds) {
-            updateAppWidget(context, appWidgetManager, appWidgetId)
-        }
-    }
-
-    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
-        // Optionally handle widget deletion (e.g., clean up shared preferences)
-        super.onDeleted(context, appWidgetIds)
-    }
 
     companion object {
         private const val SHARED_PREFS_KEY = "WakaTrackPrefs"
@@ -48,6 +37,34 @@ class WakaTrackWidget : AppWidgetProvider() {
                 R.id.tv_project_time_2,
                 R.id.tv_project_time_3
             )
+
+            var totalMinutes = 0
+            val projectTimesInMinutes = mutableListOf<Int>()
+
+            for (project in projects) {
+                val projectParts = project.split(":")
+                val projectTime = projectParts.getOrElse(1) { "0h 0m" }.trim()
+
+                val timeParts = projectTime.split(" ")
+                var minutes = 0
+                for (part in timeParts) {
+                    when {
+                        part.endsWith("h") -> minutes += part.removeSuffix("h").toInt() * 60
+                        part.endsWith("m") -> minutes += part.removeSuffix("m").toInt()
+                    }
+                }
+
+                projectTimesInMinutes.add(minutes)
+                totalMinutes += minutes
+            }
+
+            // Print scaled times for each project on a scale of 100
+            if (totalMinutes > 0) {
+                for (i in projectTimesInMinutes.indices) {
+                    val scaledTime = (projectTimesInMinutes[i].toDouble() / totalMinutes) * 100
+                    Log.d("WakaTrackWidget", "Project ${i + 1} Time on scale of 100: $scaledTime")
+                }
+            }
 
             for (i in projectNameTextViews.indices) {
                 if (i < projects.size) {
