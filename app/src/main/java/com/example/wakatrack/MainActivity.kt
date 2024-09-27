@@ -24,9 +24,10 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.text.SimpleDateFormat
 import java.util.*
 import android.util.Base64
-
+import android.widget.ProgressBar
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var progressBar: ProgressBar
     private lateinit var apiKeyInput: EditText
     private lateinit var submitButton: Button
     private lateinit var apiKeyLayout: LinearLayout
@@ -34,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var projectList: RecyclerView
     private lateinit var sharedPreferences: SharedPreferences
     private lateinit var wakaTimeApi: WakaTimeApi
+    private lateinit var progressLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,6 +63,8 @@ class MainActivity : AppCompatActivity() {
         apiKeyLayout = findViewById(R.id.apiKeyLayout)
         homeLayout = findViewById(R.id.homeLayout)
         projectList = findViewById(R.id.projectList)
+        progressBar = findViewById(R.id.progressBar)
+        progressLayout = findViewById(R.id.progressLayout)
     }
 
     private fun setupWakaTimeApi() {
@@ -99,11 +103,14 @@ class MainActivity : AppCompatActivity() {
     private fun fetchProjects(apiKey: String) {
         lifecycleScope.launch {
             try {
+                progressLayout.visibility = View.VISIBLE
+                projectList.visibility = View.GONE
+
                 Log.d("WakaTrack", "Fetching projects...")
                 val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
                 val calendar = Calendar.getInstance()
                 val endDate = dateFormat.format(calendar.time)
-                calendar.add(Calendar.DAY_OF_MONTH, -7) // Fetch last 7 days
+                calendar.add(Calendar.DAY_OF_MONTH, -7)  // Fetch last 7 days
                 val startDate = dateFormat.format(calendar.time)
 
                 // Encode API key to Base64
@@ -117,18 +124,11 @@ class MainActivity : AppCompatActivity() {
                         Project(name, projects.sumOf { it.total_seconds })
                     }
 
-                Log.d(
-                    "WakaTrack",
-                    "Fetched ${consolidatedProjects.size} projects from $startDate to $endDate"
-                )
+                Log.d("WakaTrack", "Fetched ${consolidatedProjects.size} projects from $startDate to $endDate")
 
                 if (consolidatedProjects.isEmpty()) {
                     Log.w("WakaTrack", "No projects found in the last 7 days")
-                    Toast.makeText(
-                        this@MainActivity,
-                        "No projects found in the last 7 days",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    Toast.makeText(this@MainActivity, "No projects found in the last 7 days", Toast.LENGTH_LONG).show()
                 } else {
                     projectList.layoutManager = LinearLayoutManager(this@MainActivity)
                     projectList.adapter = ProjectAdapter(consolidatedProjects)
@@ -144,7 +144,6 @@ class MainActivity : AppCompatActivity() {
                             else -> "HTTP Error ${e.code()}: ${e.message()}"
                         }
                     }
-
                     is java.net.UnknownHostException -> "Network error. Please check your internet connection."
                     else -> "Error fetching projects: ${e.message}"
                 }
@@ -153,6 +152,9 @@ class MainActivity : AppCompatActivity() {
                 if (e is retrofit2.HttpException && e.code() == 401) {
                     showApiKeyInput()
                 }
+            } finally {
+                progressLayout.visibility = View.GONE
+                projectList.visibility = View.VISIBLE
             }
         }
     }
@@ -206,7 +208,6 @@ class MainActivity : AppCompatActivity() {
         val minutes = (totalSeconds % 3600) / 60
         return "${hours}h ${minutes}m"
     }
-
 
     private fun updateWidget() {
         val appWidgetManager = AppWidgetManager.getInstance(this)
