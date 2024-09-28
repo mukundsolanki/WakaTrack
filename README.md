@@ -23,18 +23,19 @@ Download the latest APK from the Releases section.
 ## Installation
 
 1. Clone the repository:
-```
-
-   git clone https://github.com/mukundsolanki/wakatrack.git
-
+```bash
+   git clone https://github.com/mukundsolanki/WakaTrack.git
 ```
 2. Open the project in Android Studio.
+   
 3. Build and run the project on an Android device or emulator.
 
 ## Usage
 
 1. Enter API Key: On the home screen, input your WakaTime API key.
+ 
 2. Fetch Projects: The app will fetch the project list from the past 7 days and display the time spent on each project.
+
 3. Widget Setup: After setting up the widget, the home screen will display your daily time spent on all projects along with a detailed breakdown.
 
 ## Contributing
