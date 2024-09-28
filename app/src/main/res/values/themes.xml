@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.WakaTrack" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.WakaTrack" parent="android:Theme.Material.Light.NoActionBar">
+        <!-- Customize your theme colors here -->
+        <item name="colorPrimary">@color/primaryColor</item>
+        <item name="colorPrimaryDark">@color/primaryVariant</item>
+        <item name="colorAccent">@color/secondaryColor</item>
+        <item name="android:windowBackground">@color/backgroundColor</item>
+        <item name="android:textColor">@color/textColor</item>
+    </style>
+
 </resources>

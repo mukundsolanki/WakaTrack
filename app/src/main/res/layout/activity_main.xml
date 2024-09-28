@@ -3,62 +3,90 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@color/backgroundColor"
+    android:gravity="center">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="WakaTrack"
+    android:textSize="24sp"
+    android:textStyle="bold"
+    android:textColor="@color/textColor"
+    android:layout_marginBottom="16dp" />
 
     <LinearLayout
         android:id="@+id/apiKeyLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="@drawable/rounded_background">
 
         <EditText
             android:id="@+id/apiKeyInput"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Enter WakaTime API Key"
-            android:inputType="text" />
+            android:inputType="text"
+            android:padding="12dp"
+            android:background="@drawable/edittext_background"
+            android:textColor="@color/textColor"
+            android:textColorHint="@color/hintColor" />
 
         <Button
             android:id="@+id/submitButton"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Submit" />
+            android:text="Submit"
+            android:textColor="@android:color/white"
+            android:backgroundTint="@color/primaryColor"
+            android:layout_marginTop="8dp"
+            android:padding="12dp" />
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/homeLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:orientation="vertical"
-        android:visibility="gone">
+        android:visibility="gone"
+        android:padding="16dp">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Projects:"
-            android:textSize="18sp"
-            android:textStyle="bold" />
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@color/textColor" />
 
         <LinearLayout
             android:id="@+id/progressLayout"
             android:layout_width="match_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:paddingTop="8dp"
             android:visibility="gone">
 
             <ProgressBar
                 android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyleInverse"
-                android:layout_width="match_parent"
+                style="?android:attr/progressBarStyleLarge"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:indeterminate="true" />
+                android:indeterminate="true"
+                android:visibility="visible" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/projectList"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp" />
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginTop="8dp"
+            android:background="@drawable/recyclerview_background"
+            android:padding="8dp" />
     </LinearLayout>
 </LinearLayout>
