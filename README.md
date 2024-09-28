@@ -16,7 +16,7 @@ Download the latest APK from the Releases section.
 
 ## Screenshots
 
-| Home Screen | Home Screen Widget | Home Screen | Home Screen Widget |
+| Home Screen | Home Screen Widget | Project Screen | Home Screen Widget |
 |:-----------:|:------------------:|:-----------:|:------------------:|
 | ![Home Screen](SS/home.png) | ![Home Screen Widget](SS/widget.png) | ![Project Screen](SS/projects.png) | ![Home Screen Widget](SS/widget2.png) |
 
